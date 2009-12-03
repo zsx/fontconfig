@@ -2286,7 +2286,7 @@ FcFreeTypeGetPrivateMap (FT_Encoding encoding)
     return 0;
 }
 
-#include "../fc-glyphname/fcglyphname.h"
+#include "fc-glyphname/fcglyphname.h"
 
 static FcChar32
 FcHashGlyphName (const FcChar8 *name)

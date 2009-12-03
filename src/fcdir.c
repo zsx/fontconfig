@@ -23,7 +23,13 @@
  */
 
 #include "fcint.h"
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
+
+#ifndef S_ISDIR
+#define S_ISDIR( m ) (((m) & S_IFMT) == S_IFDIR)
+#endif
 
 FcBool
 FcFileIsDir (const FcChar8 *file)

@@ -22,10 +22,12 @@
  */
 
 #include "fcint.h"
-#include "../fc-arch/fcarch.h"
+#include "fc-arch/fcarch.h"
 #include <stdio.h>
 #include <fcntl.h>
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
 #include <string.h>
 #include <sys/types.h>
 #include <assert.h>
@@ -41,6 +43,21 @@
 #define O_BINARY 0
 #endif
 
+#ifndef F_OK
+#define F_OK 0
+#endif
+
+#ifndef X_OK
+#define X_OK 1
+#endif
+
+#ifndef W_OK
+#define W_OK 2
+#endif
+
+#ifndef R_OK
+#define R_OK 4
+#endif
 struct MD5Context {
         FcChar32 buf[4];
         FcChar32 bits[2];

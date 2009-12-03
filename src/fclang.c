@@ -35,7 +35,7 @@ typedef struct {
     int end;
 } FcLangCharSetRange;
 
-#include "../fc-lang/fclang.h"
+#include "fc-lang/fclang.h"
 
 struct _FcLangSet {
     FcChar32	map[NUM_LANG_SET_MAP];

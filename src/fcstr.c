@@ -69,7 +69,7 @@ FcStrFree (FcChar8 *s)
 }
 
 
-#include "../fc-case/fccase.h"
+#include "fc-case/fccase.h"
 
 #define FcCaseFoldUpperCount(cf) \
     ((cf)->method == FC_CASE_FOLD_FULL ? 1 : (cf)->count)

@@ -23,7 +23,9 @@
  */
 
 #include "fcint.h"
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
 #include <sys/types.h>
 
 #if defined (_WIN32) && (defined (PIC) || defined (DLL_EXPORT))

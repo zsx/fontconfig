@@ -27,6 +27,9 @@
 #include <string.h>
 #include <stdarg.h>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
 
 /* The language is documented in doc/fcformat.fncs
  * These are the features implemented:

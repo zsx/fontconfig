@@ -27,7 +27,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <stdarg.h>
 
 #if defined(__GNUC__) && (__GNUC__ >= 4)
