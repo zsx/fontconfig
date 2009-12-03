@@ -1,0 +1,18 @@
+# vim: ft=python expandtab
+Import('env')
+env_fc_case= env.Clone()
+
+env_fc_case['PDB'] = 'fc-case.pdb'
+
+env_fc_case.Append(CPPPATH=['#', '#src', '#../msvc'])
+
+sources=Split("fc-case.c")
+
+env_fc_case.ParseConfig('pkg-config libxml-2.0 --cflags --libs')
+env_fc_case.ParseConfig('pkg-config freetype2 --cflags --libs')
+exe = env_fc_case.Program('fc-case', sources)
+env_fc_case.AddPostAction(exe, 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2')
+
+env_fc_case.Command('fccase.h', ['fccase.tmpl.h', 'SConscript'], '''
+    fc-case\\fc-case.exe fc-case/CaseFolding.txt <$SOURCE > $TARGET ''')
+env_fc_case.Depends('fccase.h', exe)

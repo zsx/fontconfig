@@ -1,0 +1,18 @@
+# vim: ft=python expandtab
+Import('env')
+env_fc_glyphname= env.Clone()
+
+env_fc_glyphname['PDB'] = 'fc-glyphname.pdb'
+
+env_fc_glyphname.Append(CPPPATH=['#', '#src', '#../msvc'])
+
+sources=Split("fc-glyphname.c")
+
+env_fc_glyphname.ParseConfig('pkg-config libxml-2.0 --cflags --libs')
+env_fc_glyphname.ParseConfig('pkg-config freetype2 --cflags --libs')
+exe = env_fc_glyphname.Program('fc-glyphname', sources)
+env_fc_glyphname.AddPostAction(exe, 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2')
+
+env_fc_glyphname.Command('fcglyphname.h', ['fcglyphname.tmpl.h', 'SConscript'], '''
+    fc-glyphname\\fc-glyphname.exe fc-glyphname/zapfdingbats.txt <$SOURCE > $TARGET ''')
+env_fc_glyphname.Depends('fcglyphname.h', exe)

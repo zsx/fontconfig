@@ -1,0 +1,63 @@
+# vim: ft=python expandtab
+import tempfile
+import re
+import subprocess
+import os
+
+Import('env')
+env_fc = env.Clone()
+
+env_fc['PDB'] = 'libfontconfig.pdb'
+
+env_fc.Append(CPPDEFINES = [('FC_CACHEDIR', r'"\"' + env_fc['PREFIX'].replace('\\', '\\\\') + r'share\\locale\""'),
+                         ('FONTCONFIG_PATH', r'"\"'+env_fc['PREFIX'].replace('\\', '\\\\') + r'etc\""')])
+env_fc.Append(CPPPATH=['#', '#fontconfig', '#../msvc'])
+
+fontconfig_sources =Split("\
+	fcatomic.c \
+	fcblanks.c \
+	fccache.c \
+	fccfg.c \
+	fccharset.c \
+	fcdbg.c \
+	fcdefault.c \
+	fcdir.c \
+	fcformat.c \
+	fcfreetype.c \
+	fcfs.c \
+	fcinit.c \
+	fclang.c \
+	fclist.c \
+	fcmatch.c \
+	fcmatrix.c \
+	fcname.c \
+	fcpat.c \
+	fcserialize.c \
+	fcstr.c \
+	fcxml.c \
+	ftglue.c")
+PUBLIC_FILES = "fontconfig/fontconfig.h \
+        src/fcdeprecate.h \
+	fontconfig/fcprivate.h"
+
+PUBLIC_FT_FILES = "fontconfig/fcfreetype.h"
+env_fc.Command(['fcalias.h', 'fcaliastail.h'], ['makealias'] + map(lambda x: '#' + x, Split(PUBLIC_FILES)), '''
+    sh $SOURCE src fcalias.h fcaliastail.h %s ''' % PUBLIC_FILES)
+env_fc.Command(['fcftalias.h', 'fcftaliastail.h'], ['makealias'] + map(lambda x: '#' + x, Split(PUBLIC_FT_FILES)), '''
+    sh $SOURCE src fcftalias.h fcftaliastail.h %s ''' % PUBLIC_FT_FILES)
+env_fc.Command('fontconfig.def', map(lambda x: '#' + x, Split(PUBLIC_FILES) + Split(PUBLIC_FT_FILES)), '''
+	echo EXPORTS > $TARGET
+	cat %s %s| \
+ 	grep '^Fc[^ ]* *(' | sed -e 's/ *(.*$$//' -e 's/^/	/' | \
+	sort >>$TARGET''' % (PUBLIC_FILES, PUBLIC_FT_FILES))
+
+env_fc.ParseConfig('pkg-config libxml-2.0 --cflags --libs')
+env_fc.ParseConfig('pkg-config freetype2 --cflags --libs')
+env_fc.Append(LIBS=['iconv'])
+dll = env_fc.SharedLibrary(['libfontconfig' + env_fc['LIB_SUFFIX'] + '.dll', 'fontconfig.lib'], fontconfig_sources + ['fontconfig.def'] + ['#/../msvc/dirent.c'])
+env_fc.AddPostAction(dll, 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2')
+env_fc.Alias('install', env_fc.Install('$PREFIX/bin', 'libfontconfig' + env_fc['LIB_SUFFIX'] + '.dll'))
+env_fc.Alias('install', env_fc.Install('$PREFIX/lib', 'fontconfig.lib'))
+env_fc.Alias('install', env_fc.InstallAs('$PREFIX/lib/libfontconfig.lib', 'fontconfig.lib'))
+if env_fc['DEBUG'] == 1:
+    env_fc.Alias('install', env_fc.Install('$PREFIX/pdb', 'libfontconfig.pdb'))
