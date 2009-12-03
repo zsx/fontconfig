@@ -48,8 +48,9 @@ env_fc.Command(['fcftalias.h', 'fcftaliastail.h'], ['makealias'] + map(lambda x:
 env_fc.Command('fontconfig.def', map(lambda x: '#' + x, Split(PUBLIC_FILES) + Split(PUBLIC_FT_FILES)), '''
 	echo EXPORTS > $TARGET
 	cat %s %s| \
- 	grep '^Fc[^ ]* *(' | sed -e 's/ *(.*$$//' -e 's/^/	/' | \
+        grep "^Fc[^ ]* *(" | sed -e 's/ *(.*$$//' -e 's/^/	/' | \
 	sort >>$TARGET''' % (PUBLIC_FILES, PUBLIC_FT_FILES))
+env_fc.Depends('fontconfig.def', 'SConscript')
 
 env_fc.ParseConfig('pkg-config libxml-2.0 --cflags --libs')
 env_fc.ParseConfig('pkg-config freetype2 --cflags --libs')
