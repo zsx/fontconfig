@@ -1,7 +1,7 @@
 # vim: ft=python expandtab
 import os
 import subprocess
-from site_init import GBuilder, Initialize
+from site_init import *
 
 opts = Variables()
 opts.Add(PathVariable('PREFIX', 'Installation prefix', os.path.expanduser('~/FOSS'), PathVariable.PathIsDirCreate))
@@ -44,6 +44,7 @@ env['DOT_IN_SUBS'] = {'@VERSION@': VERSION,
 
 env.DotIn('fontconfig.pc', 'fontconfig.pc.in')
 env.Alias('install', env.Install('$PREFIX/lib/pkgconfig', 'fontconfig.pc'))
+env['DOT_IN_SUBS']['@PCS@'] = generate_file_element('fontconfig.pc', r'lib/pkgconfig', env)
 
 env.DotIn('config.h', 'config.h.win32.in')
 def generate_fonts_conf(target, source, env):
@@ -61,8 +62,10 @@ def generate_fonts_conf(target, source, env):
 
 env.Command('fonts.conf', ['fonts.conf.in', 'SConstruct'], generate_fonts_conf)
 env.Alias('install', env.Install('$PREFIX/etc', 'fonts.conf'))
+env['DOT_IN_SUBS']['@CONFS@'] = generate_file_element('fonts.conf', r'etc', env)
 
 env.Alias('install', env.Install('$PREFIX/include/fontconfig', ['fontconfig/fontconfig.h', 'fontconfig/fcfreetype.h', 'fontconfig/fcprivate.h']))
+env['DOT_IN_SUBS']['@HEADERS@'] = generate_file_element(['fontconfig.h', 'fcfreetype.h', 'fcprivate.h'], r'include/fontconfig', env)
 
 env.Append(CPPDEFINES=['HAVE_CONFIG_H'])
 

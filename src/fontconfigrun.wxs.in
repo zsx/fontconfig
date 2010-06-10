@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+   <Module Id='LibfontconfigRun' Language='1033' Version='@VERSION@'>
+      <Package Id='8829a74b-0424-4a7a-ac3f-5abf81b89139' Description='Libfontconfig runtime package'
+                Comments='This is a windows installer for libfontconfig library runtime files'
+                Manufacturer='Gnome4Win' InstallerVersion='200' />
+ 
+      <Directory Id='TARGETDIR' Name='SourceDir'>
+		  <Directory Id='dlls' Name='bin'>
+			  <Component Id='dlls' Guid='a84b4a65-dca1-4f03-9443-7ecd2aa9d96c'>
+				  @DLLS@
+			  </Component>
+		  </Directory>
+		  <Directory Id='confs' Name='etc'>
+			  <Component Id='confs' Guid='9a197a5b-971e-48ee-9355-42de6be2b708'>
+				  @CONFS@
+			  </Component>
+		  </Directory>
+      </Directory>
+   </Module>
+</Wix>

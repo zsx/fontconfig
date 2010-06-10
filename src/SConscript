@@ -3,6 +3,7 @@ import tempfile
 import re
 import subprocess
 import os
+from site_init import *
 
 Import('env')
 env_fc = env.Clone()
@@ -55,10 +56,26 @@ env_fc.Depends('fontconfig.def', 'SConscript')
 env_fc.ParseConfig('pkg-config libxml-2.0 --cflags --libs')
 env_fc.ParseConfig('pkg-config freetype2 --cflags --libs')
 env_fc.Append(LIBS=['iconv'])
-dll = env_fc.SharedLibrary(['libfontconfig' + env_fc['LIB_SUFFIX'] + '.dll', 'fontconfig.lib'], fontconfig_sources + ['fontconfig.def'] + ['#/../msvc/dirent.c'])
+dllname = 'libfontconfig' + env_fc['LIB_SUFFIX'] + '.dll'
+dll = env_fc.SharedLibrary([dllname, 'fontconfig.lib'], fontconfig_sources + ['fontconfig.def'] + ['#/../msvc/dirent.c'])
 env_fc.AddPostAction(dll, 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2')
 env_fc.Alias('install', env_fc.Install('$PREFIX/bin', 'libfontconfig' + env_fc['LIB_SUFFIX'] + '.dll'))
+
+env_fc['DOT_IN_SUBS']['@DLLS@'] = generate_file_element(dllname, 'bin', env_fc)
+
 env_fc.Alias('install', env_fc.Install('$PREFIX/lib', 'fontconfig.lib'))
 env_fc.Alias('install', env_fc.InstallAs('$PREFIX/lib/libfontconfig.lib', 'fontconfig.lib'))
+env_fc['DOT_IN_SUBS']['@LIBS@'] = generate_file_element(['fontconfig.lib', 'libfontconfig.lib'], r'lib', env_fc)
 if env_fc['DEBUG'] == 1:
     env_fc.Alias('install', env_fc.Install('$PREFIX/pdb', 'libfontconfig.pdb'))
+    env_fc['DOT_IN_SUBS']['@PDBS@'] = '''
+		  <Directory Id='pdb' Name='pdb'>
+			  <Component Id='pdbs' Guid='2f618509-3293-49a0-8eb6-fef2560d4172'>
+				  %s 
+			  </Component>
+		  </Directory>''' % generate_file_element(env_fc['PDB'], r'pdb', env_fc)
+
+env_fc.DotIn('fontconfigrun.wxs', 'fontconfigrun.wxs.in')
+env_fc.DotIn('fontconfigdev.wxs', 'fontconfigdev.wxs.in')
+env_fc.Depends(['fontconfigrun.wxs', 'fontconfigdev.wxs'], 'SConscript')
+env_fc.Alias('install', env_fc.Install('$PREFIX/wxs', ['fontconfigrun.wxs', 'fontconfigdev.wxs']))

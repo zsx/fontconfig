@@ -1,0 +1,27 @@
+<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+   <Module Id='LibfontconfigDev' Language='1033' Version='@VERSION@'>
+      <Package Id='4145b1dc-624e-4fb2-81f0-ef7776d54a35' Description='Libfontconfig devlopement package'
+                Comments='This is a windows installer for libfontconfig library devlopment files'
+                Manufacturer='Gnome4Win' InstallerVersion='200' />
+ 
+      <Directory Id='TARGETDIR' Name='SourceDir'>
+		  <Directory Id='include' Name='include'>
+			  <Component Id='headers' Guid='136000d4-3fd0-451e-b240-e919c663106a'>
+				  @HEADERS@
+			  </Component>
+		  </Directory>
+		  <Directory Id='lib' Name='lib'>
+			  <Component Id='libs' Guid='d060413b-33c5-436c-93e9-5e9859885bdf'>
+				  @LIBS@
+			  </Component>
+			  <Directory Id='pkgconfig' Name='pkgconfig'>
+				  <Component Id='pcs' Guid='657d9c77-d16e-41c8-9089-19af12e07c1b'>
+					  @PCS@
+				  </Component>
+			  </Directory>
+		  </Directory>
+                  @PDBS@
+      </Directory>
+   </Module>
+</Wix>
